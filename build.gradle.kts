@@ -3,9 +3,14 @@ plugins {
     id("de.l11n.gvgp.gradle-git-versioning") version "1.0.18"
 }
 
-allprojects {
+subprojects {
     apply {
         plugin("java")
+        plugin("de.l11n.gvgp.gradle-git-versioning")
+    }
+
+    gitVersioning {
+        createGetVersionTask = true
     }
 
     group = "site.moheng.betterc"

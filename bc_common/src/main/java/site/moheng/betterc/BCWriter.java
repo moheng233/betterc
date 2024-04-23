@@ -1,9 +1,12 @@
 package site.moheng.betterc;
 
 import org.ainslec.picocog.PicoWriter;
-import site.moheng.betterc.antlr.BCParser;
+import org.jetbrains.annotations.NotNull;
+
+import static site.moheng.betterc.antlr.BCParser.*;
 
 public class BCWriter {
+    final PicoWriter writer = new PicoWriter();
     BCPacker packer;
     BCChecker checker;
 
@@ -12,21 +15,42 @@ public class BCWriter {
         this.checker = checker;
     }
 
-    public void writeImport(BCParser.ImportDeclartionContext context) {
+    public String formatSymbol(@NotNull SymbolContext symbol) {
+        return symbol.getText();
+    }
+
+    public String formatTypeExpr(@NotNull TypeExprContext typeExpr) {
+        return switch (typeExpr) {
+            case TypeLiteralExpressionContext literal:
+                yield literal.type.getText();
+            case TypeGenericsExpressionContext generics:
+                yield generics.type.getText();
+            default:
+                throw new IllegalStateException("Unexpected value: " + typeExpr);
+        };
+    }
+
+    public void writeImport(@NotNull ImportDeclartionContext context) {
 
     }
 
-    public void writeStruct(BCParser.StructDeclarationContext context) {
-        
+    public void writeStruct(@NotNull StructDeclarationContext context) {
+        writer.writeln_r("typedef struct " + formatSymbol(context.name) + "{");
+
+        for (final var field : context.fields) {
+            writer.writeln(formatTypeExpr(field.type) + " " + formatSymbol(field.name) + ";");
+        }
+
+        writer.writeln_l("} " + formatSymbol(context.name));
     }
 
-    public PicoWriter write(BCParser.ProgramContext parser) {
-        final PicoWriter writer = new PicoWriter();
-        write(writer, parser);
-        return writer;
-    }
+    public void write(@NotNull ProgramContext parser) {
+        for (final var importItem : parser.imports) {
+            writeImport(importItem);
+        }
 
-    public void write(PicoWriter writer, BCParser.ProgramContext parser) {
-
+        for (final var structItem : parser.structs) {
+            writeStruct(structItem);
+        }
     }
 }

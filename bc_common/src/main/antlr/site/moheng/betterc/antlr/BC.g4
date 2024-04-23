@@ -66,7 +66,7 @@ COMMENT : '/*' .*? '*/' -> channel(HIDDEN) ;
 WS: [ \t\n\r\f]+ -> skip ;
 
 program
-    : importDeclartion* (methods+=methodDeclaration | interfaces+=interfaceDeclaration | implements+=implementDeclaration | structs+=structDeclaration)* EOF ;
+    : imports+=importDeclartion* (methods+=methodDeclaration | interfaces+=interfaceDeclaration | implements+=implementDeclaration | structs+=structDeclaration)* EOF ;
 
 symbol: id=ID ;
 accessSymbol : id+=ID ('.' id+=ID)* ;
@@ -84,7 +84,7 @@ structField
 structDeclaration
     : STRUCT name=symbol
     '{'
-        structField*
+        fields+=structField*
     '}' ;
 
 methodDeclaration : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' body=bodyStat ;
