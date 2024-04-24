@@ -1,4 +1,5 @@
 plugins {
+    `java-platform`
     id("idea")
     id("de.l11n.gvgp.gradle-git-versioning") version "1.0.18"
 }

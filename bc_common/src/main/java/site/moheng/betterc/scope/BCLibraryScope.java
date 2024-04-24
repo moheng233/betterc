@@ -1,55 +1,34 @@
 package site.moheng.betterc.scope;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import site.moheng.betterc.antlr.BCParser;
-import site.moheng.betterc.symbol.BCInterfaceSymbol;
-import site.moheng.betterc.symbol.BCStructSymbol;
+import site.moheng.betterc.symbol.IBCTypeSymbol;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /// TODO
-public class BCLibraryScope implements IBCMethodScope, IBCInterfaceScope, IBCStructScope {
-    @Override
-    public List<BCInterfaceSymbol> getInterfaces() {
-        return List.of();
+public class BCLibraryScope implements IBCTypeScope {
+    private final BidiMap<ParserRuleContext, IBCTypeSymbol> typeSymbolMap;
+
+    public BCLibraryScope(Map<ParserRuleContext, IBCTypeSymbol> map) {
+        typeSymbolMap = new DualHashBidiMap<>(map);
     }
 
     @Override
-    public BCInterfaceSymbol findInterface(BCParser.StructDeclarationContext name) {
+    public Set<IBCTypeSymbol> getTypes() {
+        return typeSymbolMap.values();
+    }
+
+    @Override
+    public IBCTypeSymbol findType(BCParser.StructDeclarationContext name) {
         return null;
     }
 
     @Override
-    public BCInterfaceSymbol findInterface(BCParser.AccessSymbolContext access) {
-        return null;
-    }
-
-    @Override
-    public List<BCStructSymbol> getMethod() {
-        return List.of();
-    }
-
-    @Override
-    public BCStructSymbol findMethod(BCParser.MethodDeclarationContext name) {
-        return null;
-    }
-
-    @Override
-    public BCStructSymbol findMethod(BCParser.AccessSymbolContext access) {
-        return null;
-    }
-
-    @Override
-    public List<BCStructSymbol> getStructs() {
-        return List.of();
-    }
-
-    @Override
-    public BCStructSymbol findStruct(BCParser.StructDeclarationContext name) {
-        return null;
-    }
-
-    @Override
-    public BCStructSymbol findStruct(BCParser.AccessSymbolContext access) {
+    public IBCTypeSymbol findType(BCParser.AccessSymbolContext access) {
         return null;
     }
 }

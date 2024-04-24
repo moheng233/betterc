@@ -52,7 +52,6 @@ IMPLEMENT : 'implement' | 'impl' ;
 EXTENDS : 'extends' ;
 
 VOID : 'void' ;
-
 TRUE : 'true' ;
 FALSE : 'false' ;
 fragment DIGIT : [0-9] ;

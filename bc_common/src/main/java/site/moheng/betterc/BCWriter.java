@@ -2,6 +2,7 @@ package site.moheng.betterc;
 
 import org.ainslec.picocog.PicoWriter;
 import org.jetbrains.annotations.NotNull;
+import site.moheng.betterc.symbol.BCLibrarySymbol;
 
 import static site.moheng.betterc.antlr.BCParser.*;
 
@@ -19,22 +20,37 @@ public class BCWriter {
         return symbol.getText();
     }
 
+    public String formatTypeLiteral(@NotNull TypeLiteralContext typeLiteral) {
+        return formatTypeLiteral(BCLibrarySymbol.GLOBAL, typeLiteral);
+    }
+
+    public String formatTypeLiteral(@NotNull BCLibrarySymbol library, @NotNull TypeLiteralContext typeLiteral) {
+        return switch (typeLiteral) {
+            case VoidTypeLiteralContext ignored:
+                yield "void";
+            case SymbolTypeLiteralContext literal:
+                yield "literal";
+            default:
+                throw new IllegalStateException("Unexpected value: " + typeLiteral);
+        };
+    }
+
     public String formatTypeExpr(@NotNull TypeExprContext typeExpr) {
         return switch (typeExpr) {
             case TypeLiteralExpressionContext literal:
-                yield literal.type.getText();
+                yield formatTypeLiteral(literal.type);
             case TypeGenericsExpressionContext generics:
-                yield generics.type.getText();
+                yield formatTypeExpr(generics.type) + "_" + String.join("_", generics.generics.stream().map(this::formatTypeExpr).toList());
             default:
                 throw new IllegalStateException("Unexpected value: " + typeExpr);
         };
     }
 
-    public void writeImport(@NotNull ImportDeclartionContext context) {
+    public void writeImport(@NotNull BCLibrarySymbol library, @NotNull ImportDeclartionContext context) {
 
     }
 
-    public void writeStruct(@NotNull StructDeclarationContext context) {
+    public void writeStruct(@NotNull BCLibrarySymbol library, @NotNull StructDeclarationContext context) {
         writer.writeln_r("typedef struct " + formatSymbol(context.name) + "{");
 
         for (final var field : context.fields) {
@@ -44,13 +60,13 @@ public class BCWriter {
         writer.writeln_l("} " + formatSymbol(context.name));
     }
 
-    public void write(@NotNull ProgramContext parser) {
+    public void write(@NotNull BCLibrarySymbol library, @NotNull ProgramContext parser) {
         for (final var importItem : parser.imports) {
-            writeImport(importItem);
+            writeImport(library, importItem);
         }
 
         for (final var structItem : parser.structs) {
-            writeStruct(structItem);
+            writeStruct(library, structItem);
         }
     }
 }
