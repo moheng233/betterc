@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     id("antlr")
+    id("io.freefair.lombok") version "8.6"
 }
 
 dependencies {

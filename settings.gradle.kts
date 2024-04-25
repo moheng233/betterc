@@ -11,4 +11,4 @@ plugins {
 
 rootProject.name = "betterc"
 
-include(":bc_common", ":bc_builder", ":bc_lsp")
+include(":bc_common", ":bc_builder", ":bc_language_server", ":bc_jetbrains_plugin")

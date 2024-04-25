@@ -1,4 +1,11 @@
 package site.moheng.betterc.symbol;
 
-public record BCStructFieldSymbol(String name, IBCTypeSymbol type) {
+import lombok.Value;
+import lombok.With;
+
+@Value(staticConstructor = "of")
+public class BCStructFieldSymbol implements IBCTypeSymbol {
+  String name;
+  @With
+  IBCTypeSymbol type;
 }

@@ -26,8 +26,6 @@ public class BCWriter {
 
     public String formatTypeLiteral(@NotNull BCLibrarySymbol library, @NotNull TypeLiteralContext typeLiteral) {
         return switch (typeLiteral) {
-            case VoidTypeLiteralContext ignored:
-                yield "void";
             case SymbolTypeLiteralContext literal:
                 yield "literal";
             default:

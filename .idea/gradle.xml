@@ -10,7 +10,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/bc_builder" />
             <option value="$PROJECT_DIR$/bc_common" />
-            <option value="$PROJECT_DIR$/bc_lsp" />
+            <option value="$PROJECT_DIR$/bc_jetbrains_plugin" />
+            <option value="$PROJECT_DIR$/bc_language_server" />
           </set>
         </option>
       </GradleProjectSettings>

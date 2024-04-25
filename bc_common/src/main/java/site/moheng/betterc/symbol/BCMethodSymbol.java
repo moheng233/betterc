@@ -1,9 +1,14 @@
 package site.moheng.betterc.symbol;
 
 import java.util.List;
+import lombok.Value;
+import lombok.With;
 
-public record BCMethodSymbol(BCLibrarySymbol library,
-                             String name,
-                             IBCTypeSymbol returnValue,
-                             List<BCMethodArgSymbol> args) implements IBCTypeSymbol {
+@Value(staticConstructor = "of")
+public class BCMethodSymbol implements IBCTypeSymbol {
+  String name;
+  @With
+  IBCTypeSymbol returnValue;
+  @With
+  List<BCMethodArgSymbol> args;
 }

@@ -1,32 +1,36 @@
 package site.moheng.betterc.symbol;
 
+import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Objects;
+@Value
+@AllArgsConstructor(staticName = "of")
+public class BCLibrarySymbol {
+  public static final BCLibrarySymbol STD = BCLibrarySymbol.of("bc:std");
+  public static final BCLibrarySymbol GLOBAL = BCLibrarySymbol.of("global");
 
-public record BCLibrarySymbol(String uri, List<BCLibrarySymbol> imports) {
-    public static final BCLibrarySymbol STD = new BCLibrarySymbol("bc:std", List.of());
-    public static final BCLibrarySymbol GLOBAL = new BCLibrarySymbol("global", List.of());
+  String uri;
 
-    public @NotNull String getNamespace() {
-        if (Objects.equals(uri, "global")) {
-            return "global";
-        }
-        if (uri.contains(":")) {
-            return uri.substring(0, uri.lastIndexOf(':'));
-        }
-        return "";
+  public @NotNull String getNamespace() {
+    if (Objects.equals(uri, "global")) {
+      return "global";
+    }
+    if (uri.contains(":")) {
+      return uri.substring(0, uri.lastIndexOf(':'));
+    }
+    return "";
+  }
+
+  public @NotNull String getPath() {
+    if (Objects.equals(uri, "global")) {
+      return "";
+    }
+    if (uri.contains(":")) {
+      return uri.substring(uri.lastIndexOf(':') + 1);
     }
 
-    public @NotNull String getPath() {
-        if (Objects.equals(uri, "global")) {
-            return "";
-        }
-        if (uri.contains(":")) {
-            return uri.substring(uri.lastIndexOf(':') + 1);
-        }
-
-        return uri;
-    }
+    return uri;
+  }
 }

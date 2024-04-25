@@ -1,4 +1,11 @@
 package site.moheng.betterc.symbol;
 
-public record BCMethodArgSymbol(String name, IBCTypeSymbol type) {
+import lombok.Value;
+import lombok.With;
+
+@Value(staticConstructor = "of")
+public class BCMethodArgSymbol implements IBCTypeSymbol {
+  String name;
+  @With
+  IBCTypeSymbol type;
 }

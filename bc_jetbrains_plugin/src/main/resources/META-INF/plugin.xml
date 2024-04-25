@@ -1,0 +1,61 @@
+<idea-plugin>
+    <id>site.moheng.betterc.jetbrains_plugin</id>
+    <name>BetterC</name>
+    <vendor>Moheng</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <preloadingActivity
+                implementation="site.moheng.betterc.jetbrains_plugin.BetterCPreloadingActivity"
+                id="site.moheng.betterc.jetbrains_plugin.BetterCPreloadingActivity"/>
+
+        <applicationService serviceImplementation="org.wso2.lsp4intellij.IntellijLanguageClient"/>
+        <editorFactoryListener implementation="org.wso2.lsp4intellij.listeners.LSPEditorListener"/>
+        <fileDocumentManagerListener implementation="org.wso2.lsp4intellij.listeners.LSPFileDocumentManagerListener"/>
+
+        <notificationGroup id="lsp" displayType="STICKY_BALLOON"/>
+        <notificationGroup id="LSPProgressNotification" displayType="NONE"/>
+
+        <statusBarWidgetFactory implementation="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"
+                                id="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"
+                                order="first"/>
+
+        <completion.contributor implementationClass="org.wso2.lsp4intellij.contributors.LSPCompletionContributor"
+                                id="org.wso2.lsp4intellij.contributors.LSPCompletionContributor"
+                                language="BetterC"/>
+
+        <typedHandler implementation="org.wso2.lsp4intellij.listeners.LSPTypedHandler"
+                      id="LSPTypedHandler"/>
+
+        <externalAnnotator id="LSPAnnotator" language="BetterC"
+                           implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
+
+        <gotoSymbolContributor implementation="org.wso2.lsp4intellij.contributors.symbol.LSPSymbolContributor"
+                               id="LSPSymbolContributor"/>
+
+        <renameHandler implementation="org.wso2.lsp4intellij.contributors.rename.LSPRenameHandler" id="LSPRenameHandler"
+                       order="first"/>
+        <renamePsiElementProcessor implementation="org.wso2.lsp4intellij.contributors.rename.LSPRenameProcessor"
+                                   id="LSPRenameProcessor" order="first"/>
+
+        <lang.foldingBuilder language="BetterC"
+                             implementationClass="org.wso2.lsp4intellij.contributors.LSPFoldingRangeProvider"
+                             id="LSPFoldingRangeProvider" order="first"/>
+    </extensions>
+
+    <actions>
+        <action id="org.intellij.sdk.action.QuickDocAction" class="org.wso2.lsp4intellij.actions.LSPQuickDocAction">
+        </action>
+
+        <action class="org.wso2.lsp4intellij.actions.LSPReferencesAction" id="LSPFindUsages">
+            <keyboard-shortcut first-keystroke="shift alt F7" keymap="$default"/>
+        </action>
+    </actions>
+    <applicationListeners>
+        <listener class="org.wso2.lsp4intellij.listeners.VFSListener"
+                  topic="com.intellij.openapi.vfs.VirtualFileListener"/>
+        <listener class="org.wso2.lsp4intellij.listeners.LSPProjectManagerListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </applicationListeners>
+</idea-plugin>

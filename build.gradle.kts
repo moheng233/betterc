@@ -7,6 +7,7 @@ plugins {
 subprojects {
     apply {
         plugin("java")
+        plugin("checkstyle")
         plugin("de.l11n.gvgp.gradle-git-versioning")
     }
 

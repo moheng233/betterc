@@ -1,34 +1,40 @@
 package site.moheng.betterc.scope;
 
-import org.antlr.v4.runtime.ParserRuleContext;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import org.antlr.v4.runtime.Token;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import site.moheng.betterc.antlr.BCParser;
 import site.moheng.betterc.symbol.IBCTypeSymbol;
-
-import java.util.Map;
-import java.util.Set;
 
 /// TODO
 public class BCLibraryScope implements IBCTypeScope {
-    private final BidiMap<ParserRuleContext, IBCTypeSymbol> typeSymbolMap;
+  private final BidiMap<Token, IBCTypeSymbol> typeSymbolMap;
 
-    public BCLibraryScope(Map<ParserRuleContext, IBCTypeSymbol> map) {
-        typeSymbolMap = new DualHashBidiMap<>(map);
-    }
+  public BCLibraryScope(Map<Token, IBCTypeSymbol> map) {
+    typeSymbolMap = new DualHashBidiMap<>(map);
+  }
 
-    @Override
-    public Set<IBCTypeSymbol> getTypes() {
-        return typeSymbolMap.values();
-    }
+  @Override
+  public Set<IBCTypeSymbol> getTypes() {
+    return typeSymbolMap.values();
+  }
 
-    @Override
-    public IBCTypeSymbol findType(BCParser.StructDeclarationContext name) {
-        return null;
-    }
+  @Override
+  public <T extends IBCTypeSymbol> List<T> completion(Token token, Class<T> type) {
+    return typeSymbolMap
+        .entrySet()
+        .stream()
+        .filter(e -> e.getKey().getClass() == type)
+        .filter(e -> e.getKey().getText().contains(token.getText()))
+        .map(e -> (T) e.getValue())
+        .toList();
+  }
 
-    @Override
-    public IBCTypeSymbol findType(BCParser.AccessSymbolContext access) {
-        return null;
-    }
+  @Override
+  public Optional<IBCTypeSymbol> find(Token token) {
+    return Optional.ofNullable(typeSymbolMap.get(token));
+  }
 }

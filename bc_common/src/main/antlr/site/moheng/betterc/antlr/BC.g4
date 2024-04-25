@@ -51,7 +51,6 @@ STRUCT : 'struct' ;
 IMPLEMENT : 'implement' | 'impl' ;
 EXTENDS : 'extends' ;
 
-VOID : 'void' ;
 TRUE : 'true' ;
 FALSE : 'false' ;
 fragment DIGIT : [0-9] ;
@@ -65,7 +64,12 @@ COMMENT : '/*' .*? '*/' -> channel(HIDDEN) ;
 WS: [ \t\n\r\f]+ -> skip ;
 
 program
-    : imports+=importDeclartion* (methods+=methodDeclaration | interfaces+=interfaceDeclaration | implements+=implementDeclaration | structs+=structDeclaration)* EOF ;
+    : imports+=importDeclartion* (
+          methods+=methodDeclaration
+        | interfaces+=interfaceDeclaration
+        | implements+=implementDeclaration
+        | structs+=structDeclaration
+    )* EOF ;
 
 symbol: id=ID ;
 accessSymbol : id+=ID ('.' id+=ID)* ;
@@ -90,7 +94,7 @@ methodDeclaration : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA
 bodyStat: '{' statements+=statement* '}' ;
 
 statement
-    : cycle=( CONST | VAR ) name=symbol (':' type=typeExpr)? ASSIGN value=expression SEMI #VariableAssignStatement
+    : cycle=( CONST | VAR ) name=symbol (':' type=typeExpr)? ASSIGN value=expression SEMI #VariableDeclarationStatement
     | IF '(' conditions+=expression ')' body+=bodyStat ( ELSE IF '(' conditions+=expression ')' body+=bodyStat)* ( ELSE body+=bodyStat )?  #IfStatement
     | FOR '(' cycle=( CONST | VAR ) name=symbol (':' type=typeExpr)? IN value=expression ')' body=bodyStat #ForInStatement
     | RETURN value=expression SEMI #ReturnStatement
@@ -103,8 +107,7 @@ uniArgDef : (type=typeExpr | VAR) name=symbol ;
 typeUniArgDef : type=typeExpr name=symbol? ;
 
 typeLiteral
-    : VOID #VoidTypeLiteral
-    | '(' (args+=typeUniArgDef (COMMA args+=typeUniArgDef)*)? ')' '=>' return=typeExpr #MethodTypeLiteral
+    : '(' (args+=typeUniArgDef (COMMA args+=typeUniArgDef)*)? ')' '=>' return=typeExpr #MethodTypeLiteral
     | type=accessSymbol #SymbolTypeLiteral
     ;
 
@@ -120,7 +123,9 @@ literal
     | value=STRING #StringLiteral
     ;
 
-expression: left=expression '(' args+=expression (COMMA args+=expression)* ')' #CallExpression
+expression
+    : left=expression '(' args+=expression (COMMA args+=expression)* ')' #CallExpression
+    | left=accessSymbol ASSIGN expression #VariableAssignment
     | oper=NOT right=expression #NotExpression
     | left=expression oper=AS type=typeExpr #AsExpression
     | left=expression (oper=AND | oper=OR) right=expression #CombinatorialLogicExpression
