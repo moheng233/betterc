@@ -1,4 +1,4 @@
-package site.moheng.betterc.symbol;
+package site.moheng.betterc.symbol.type;
 
 import lombok.Value;
 

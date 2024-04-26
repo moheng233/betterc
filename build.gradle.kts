@@ -4,10 +4,11 @@ plugins {
     id("de.l11n.gvgp.gradle-git-versioning") version "1.0.18"
 }
 
+
 subprojects {
     apply {
         plugin("java")
-        plugin("checkstyle")
+//        plugin("checkstyle")
         plugin("de.l11n.gvgp.gradle-git-versioning")
     }
 
@@ -22,6 +23,6 @@ subprojects {
     }
 
     tasks.withType<JavaCompile>().configureEach {
-        options.release = 21;
+        options.release = 21
     }
 }

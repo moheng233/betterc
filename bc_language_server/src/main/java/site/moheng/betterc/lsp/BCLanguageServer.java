@@ -1,40 +1,45 @@
 package site.moheng.betterc.lsp;
 
-import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.ServerCapabilities;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.services.LanguageServer;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-public class BCLanguageServer implements LanguageServer {
-  @Override
-  public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
-    final var capabilities = new ServerCapabilities();
-    capabilities.setTextDocumentSync(TextDocumentSyncKind.Incremental);
+import java.util.concurrent.CompletableFuture;
 
-    final var result = new InitializeResult(capabilities);
+public final class BCLanguageServer implements LanguageServer {
+    @Override
+    public @NotNull CompletableFuture<InitializeResult> initialize(InitializeParams params) {
+        final var capabilities = new ServerCapabilities();
+        capabilities.setTextDocumentSync(TextDocumentSyncKind.Incremental);
 
-    return CompletableFuture.completedFuture(result);
-  }
+        final var result = new InitializeResult(capabilities);
 
-  @Override
-  public CompletableFuture<Object> shutdown() {
-    return CompletableFuture.completedFuture(null);
-  }
+        return CompletableFuture.completedFuture(result);
+    }
 
-  @Override
-  public void exit() {
+    @Override
+    public @NotNull CompletableFuture<Object> shutdown() {
+        return CompletableFuture.completedFuture(null);
+    }
 
-  }
+    @Override
+    public void exit() {
 
-  @Override
-  public BCTextDocumentService getTextDocumentService() {
-    return new BCTextDocumentService();
-  }
+    }
 
-  @Override
-  public BCWorkspaceService getWorkspaceService() {
-    return new BCWorkspaceService();
-  }
+    @Contract(value = " -> new", pure = true)
+    @Override
+    public @NotNull BCTextDocumentService getTextDocumentService() {
+        return new BCTextDocumentService();
+    }
+
+    @Contract(value = " -> new", pure = true)
+    @Override
+    public @NotNull BCWorkspaceService getWorkspaceService() {
+        return new BCWorkspaceService();
+    }
 }

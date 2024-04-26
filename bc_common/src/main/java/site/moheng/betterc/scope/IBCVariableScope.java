@@ -1,7 +1,7 @@
 package site.moheng.betterc.scope;
 
 import site.moheng.betterc.antlr.BCParser;
-import site.moheng.betterc.symbol.BCVariableSymbol;
+import site.moheng.betterc.symbol.variable.BCVariableSymbol;
 
 import java.util.List;
 

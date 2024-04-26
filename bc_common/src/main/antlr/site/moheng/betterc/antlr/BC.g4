@@ -67,27 +67,28 @@ program
     : imports+=importDeclartion* (
           methods+=methodDeclaration
         | interfaces+=interfaceDeclaration
-        | implements+=implementDeclaration
         | structs+=structDeclaration
     )* EOF ;
 
 symbol: id=ID ;
 accessSymbol : id+=ID ('.' id+=ID)* ;
 
-importDeclartion: IMPORT uri=STRING (SHOW symbol (',' symbol)*)* (HIDE symbol (',' symbol)*)* (AS symbol)* SEMI;
+importDeclartion: IMPORT uri=STRING (SHOW symbol (',' symbol)*)? (HIDE symbol (',' symbol)*)* (AS symbol)? SEMI;
 
 interfaceMethodField : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' SEMI ;
 interfaceDeclaration : INTERFACE name=symbol (EXTENDS extends+=accessSymbol ( ',' extends+=accessSymbol)*)? '{' vars+=interfaceMethodField* '}';
 
-implementDeclaration : IMPLEMENT interface=accessSymbol FOR struct=accessSymbol '{' methodDeclaration* '}' ;
-
 structField
     : static=STATIC? count=CONST? type=typeExpr name=symbol ASSIGN value=expression SEMI
     ;
+structMethod
+    :  methodDeclaration SEMI
+    ;
 structDeclaration
-    : STRUCT name=symbol
+    : STRUCT name=symbol IMPLEMENT (implementations+=accessSymbol (',' implementations+=accessSymbol)*)?
     '{'
         fields+=structField*
+        methods+=structMethod*
     '}' ;
 
 methodDeclaration : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' body=bodyStat ;

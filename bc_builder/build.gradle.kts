@@ -26,7 +26,7 @@ dependencies {
 }
 
 tasks.compileJava {
-    options.compilerArgs.addLast("-Aproject=${project.group}/${project.name}")
+//    options.compilerArgs.addLast("-Aproject=${project.group}/${project.name}")
 }
 
 tasks.test {
