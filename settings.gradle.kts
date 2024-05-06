@@ -1,7 +1,19 @@
 pluginManagement {
-
     plugins {
         kotlin("jvm") version "1.9.23"
+    }
+
+    val lombokVersion: String by settings
+    val jetVersion: String by settings
+
+
+    resolutionStrategy {
+        eachPlugin {
+            when (requested.id.id) {
+                "io.freefair.lombok" -> useVersion(lombokVersion)
+                "gg.jte.gradle" -> useVersion(jetVersion)
+            }
+        }
     }
 }
 

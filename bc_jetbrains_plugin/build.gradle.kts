@@ -19,14 +19,17 @@ intellijPlatform {
 
 }
 
+val jetbrainsAnnotationsVersion: String by project
+val lsp4jVersion: String by project
+
 dependencies {
     intellijPlatform {
         intellijIdeaCommunity("2024.1")
         instrumentationTools()
     }
 
-    implementation("org.jetbrains:annotations:24.1.0")
-    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.22.0")
+    implementation("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
+    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:$lsp4jVersion")
     implementation("com.github.ballerina-platform:lsp4intellij:0.96.0") {
         exclude("org.eclipse.lsp4j", "org.eclipse.lsp4j")
     }

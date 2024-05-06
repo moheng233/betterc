@@ -34,6 +34,7 @@ public class BCTypeProvider {
                                   @NotNull StructDeclarationContext declaration) {
 //        return BCStructSymbol.of(library, declaration.name.id.getText(),
 //                declaration.fields.stream().map((field) -> getType(library, field)).toList());
+        return null;
     }
 
     public BCMethodSymbol getType(@NotNull MethodDeclarationContext method) {

@@ -4,10 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import site.moheng.betterc.antlr.BCParser;
 import site.moheng.betterc.symbol.BCLibrarySymbol;
 
-public abstract class BCWriter {
+public abstract class BCWriterContext {
     final BCLibrarySymbol library;
 
-    protected BCWriter(BCLibrarySymbol library) {
+    protected BCWriterContext(BCLibrarySymbol library) {
         this.library = library;
     }
 
