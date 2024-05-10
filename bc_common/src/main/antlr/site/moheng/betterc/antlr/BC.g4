@@ -71,12 +71,16 @@ program
     )* EOF ;
 
 symbol: id=ID ;
-accessSymbol : id+=ID ('.' id+=ID)* ;
+
+typeAccessRef : id=ID;
+variableAccessRef: id = ID
+    | typeAccessRef '::' id=ID
+    | variableAccessRef DOT id=ID;
 
 importDeclartion: IMPORT uri=STRING (SHOW symbol (',' symbol)*)? (HIDE symbol (',' symbol)*)* (AS symbol)? SEMI;
 
 interfaceMethodField : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' SEMI ;
-interfaceDeclaration : INTERFACE name=symbol (EXTENDS extends+=accessSymbol ( ',' extends+=accessSymbol)*)? '{' vars+=interfaceMethodField* '}';
+interfaceDeclaration : INTERFACE name=symbol (EXTENDS extends+=typeAccessRef ( ',' extends+=typeAccessRef)*)? '{' vars+=interfaceMethodField* '}';
 
 structField
     : static=STATIC? count=CONST? type=typeExpr name=symbol ASSIGN value=expression SEMI
@@ -85,7 +89,7 @@ structMethod
     :  methodDeclaration SEMI
     ;
 structDeclaration
-    : STRUCT name=symbol IMPLEMENT (implementations+=accessSymbol (',' implementations+=accessSymbol)*)?
+    : STRUCT name=symbol (IMPLEMENT implementations+=typeAccessRef (',' implementations+=typeAccessRef)*)?
     '{'
         fields+=structField*
         methods+=structMethod*
@@ -95,7 +99,7 @@ methodDeclaration : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA
 bodyStat: '{' statements+=statement* '}' ;
 
 statement
-    : cycle=( CONST | VAR ) name=symbol (':' type=typeExpr)? ASSIGN value=expression SEMI #VariableDeclarationStatement
+    : const=CONST? ( VAR | type=typeExpr ) name=symbol ASSIGN value=expression SEMI #VariableDeclarationStatement
     | IF '(' conditions+=expression ')' body+=bodyStat ( ELSE IF '(' conditions+=expression ')' body+=bodyStat)* ( ELSE body+=bodyStat )?  #IfStatement
     | FOR '(' cycle=( CONST | VAR ) name=symbol (':' type=typeExpr)? IN value=expression ')' body=bodyStat #ForInStatement
     | RETURN value=expression SEMI #ReturnStatement
@@ -109,7 +113,7 @@ typeUniArgDef : type=typeExpr name=symbol? ;
 
 typeLiteral
     : '(' (args+=typeUniArgDef (COMMA args+=typeUniArgDef)*)? ')' '=>' return=typeExpr #MethodTypeLiteral
-    | type=accessSymbol #SymbolTypeLiteral
+    | type=typeAccessRef #TypeRef
     ;
 
 typeExpr
@@ -125,14 +129,15 @@ literal
     ;
 
 expression
-    : left=expression '(' args+=expression (COMMA args+=expression)* ')' #CallExpression
-    | left=accessSymbol ASSIGN expression #VariableAssignment
+    : left=expression '(' (args+=expression (COMMA args+=expression)*)? ')' #CallExpression
+    | left=typeLiteral ASSIGN expression #VariableAssignment
     | oper=NOT right=expression #NotExpression
     | left=expression oper=AS type=typeExpr #AsExpression
     | left=expression (oper=AND | oper=OR) right=expression #CombinatorialLogicExpression
     | left=expression (oper=EQ | oper=NE | oper=LT | oper=LE | oper=GE | oper=GT) right=expression #ComparativeLogicExpression
-    | left=expression (oper=TIMES | oper=DIVIDE | oper=PLUS | oper=LESS) right=expression #MathsExpression
-    | accessSymbol #VariableExpression
+    | left=expression (oper=TIMES | oper=DIVIDE) right=expression #MathsExpression
+    | left=expression (oper=PLUS | oper=LESS) right=expression #MathsExpression
+    | variableAccessRef #VariableExpression
     | literal #LiteralExpression
     | '(' right=expression ')' #ParenExpression
     | returnValue=typeExpr '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' '=>' body=bodyStat #ClosureExpression

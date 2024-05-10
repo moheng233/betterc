@@ -6,24 +6,21 @@ import org.junit.jupiter.api.Test;
 import site.moheng.betterc.antlr.BCLexer;
 import site.moheng.betterc.antlr.BCParser;
 import site.moheng.betterc.diagnostic.SyntaxDiagnostic;
-
-import java.util.ArrayList;
-import java.util.List;
+import site.moheng.betterc.inspector.InspectorContext;
+import site.moheng.betterc.inspector.TypePreProcessingInspector;
 
 class BCInspectorTest {
-    public BCParser.ProgramContext compile(String src) {
+    public BCParser.ProgramContext compile(String src, InspectorContext inspector) {
         final var lexer = new BCLexer(CharStreams.fromString(src));
         final var parser = new BCParser(new CommonTokenStream(lexer));
         parser.removeErrorListeners();
-
-        final List<SyntaxDiagnostic> errors = new ArrayList<>();
 
         parser.addErrorListener(new BaseErrorListener() {
             @Override
             public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
                                     int charPositionInLine, String msg, RecognitionException e) {
                 super.syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
-                errors.add(SyntaxDiagnostic.of(line, charPositionInLine, msg, e));
+                inspector.addDiagnostic(SyntaxDiagnostic.of(line, charPositionInLine, msg, e));
             }
         });
 
@@ -32,15 +29,21 @@ class BCInspectorTest {
 
     @Test
     void testLiteral() {
-        final var inspector = new BCInspector();
+        final var inspector = new InspectorContext();
+        final var typeInspector = new TypePreProcessingInspector(inspector);
+
         final String source = """
                 void main() {
-                    var a = ! 1;
+                    var a =;
                 }
                 """;
 
-        final var program = compile(source);
+        final var program = compile(source, inspector);
         IterativeParseTreeWalker walker = new IterativeParseTreeWalker();
-        walker.walk(inspector, program);
+        walker.walk(typeInspector, program);
+
+        for (final var message : inspector.diagnostics) {
+            System.out.println(message.getMessage());
+        }
     }
 }

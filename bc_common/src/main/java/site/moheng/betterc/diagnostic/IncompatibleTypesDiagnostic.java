@@ -22,4 +22,14 @@ public class IncompatibleTypesDiagnostic implements DiagnosticMessage {
     public int getCharPositionInLine() {
         return sourceNode.start.getCharPositionInLine();
     }
+
+    @Override
+    public DiagnosticLevel getDiagnosticLevel() {
+        return DiagnosticLevel.ERROR;
+    }
+
+    @Override
+    public String getMessage() {
+        return "[" + getLine() + ":" + getCharPositionInLine() + "] " + "";
+    }
 }

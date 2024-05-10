@@ -10,4 +10,14 @@ public class SyntaxDiagnostic implements DiagnosticMessage {
 
     String msg;
     RecognitionException exception;
+
+    @Override
+    public DiagnosticLevel getDiagnosticLevel() {
+        return DiagnosticLevel.ERROR;
+    }
+
+    @Override
+    public String getMessage() {
+        return "[" + line + ":" + charPositionInLine + "] " + msg;
+    }
 }
