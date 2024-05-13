@@ -18,6 +18,11 @@ public class SyntaxDiagnostic implements DiagnosticMessage {
 
     @Override
     public String getMessage() {
-        return "[" + line + ":" + charPositionInLine + "] " + msg;
+        return STR."[\{line}:\{charPositionInLine}] \{msg}";
+    }
+
+    @Override
+    public String toString() {
+        return getMessage();
     }
 }

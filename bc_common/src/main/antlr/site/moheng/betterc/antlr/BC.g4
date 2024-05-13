@@ -34,6 +34,7 @@ RCURLY : '}' ;
 IMPORT : 'import' ;
 SHOW : 'show' ;
 HIDE : 'hide' ;
+NEW : 'new' ;
 AS : 'as' ;
 PUBLIC : 'public' ;
 PRIVATE : 'private' ;
@@ -73,9 +74,9 @@ program
 symbol: id=ID ;
 
 typeAccessRef : id=ID;
-variableAccessRef: id = ID
-    | typeAccessRef '::' id=ID
-    | variableAccessRef DOT id=ID;
+variableAccessRef: id = ID #SimpleVariableRef
+    | parent=typeAccessRef '::' id=ID #StaticVariableRef
+    | parent=variableAccessRef DOT id=ID #StructureVariableRef;
 
 importDeclartion: IMPORT uri=STRING (SHOW symbol (',' symbol)*)? (HIDE symbol (',' symbol)*)* (AS symbol)? SEMI;
 
@@ -95,16 +96,16 @@ structDeclaration
         methods+=structMethod*
     '}' ;
 
-methodDeclaration : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' body=bodyStat ;
-bodyStat: '{' statements+=statement* '}' ;
+methodDeclaration : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' body=bodyDeclaration ;
+bodyDeclaration: '{' statements+=statement* '}' ;
 
 statement
     : const=CONST? ( VAR | type=typeExpr ) name=symbol ASSIGN value=expression SEMI #VariableDeclarationStatement
-    | IF '(' conditions+=expression ')' body+=bodyStat ( ELSE IF '(' conditions+=expression ')' body+=bodyStat)* ( ELSE body+=bodyStat )?  #IfStatement
-    | FOR '(' cycle=( CONST | VAR ) name=symbol (':' type=typeExpr)? IN value=expression ')' body=bodyStat #ForInStatement
+    | IF '(' conditions+=expression ')' body+=bodyDeclaration ( ELSE IF '(' conditions+=expression ')' body+=bodyDeclaration)* ( ELSE body+=bodyDeclaration )?  #IfStatement
+    | FOR '(' cycle=( CONST | VAR ) name=symbol (':' type=typeExpr)? IN value=expression ')' body=bodyDeclaration #ForInStatement
     | RETURN value=expression SEMI #ReturnStatement
     | value=expression SEMI #ExpressionStatement
-    | bodyStat #BodyStatement
+    | bodyDeclaration #BodyStatement
     ;
 
 uniArgDef : (type=typeExpr | VAR) name=symbol ;
@@ -137,8 +138,8 @@ expression
     | left=expression (oper=EQ | oper=NE | oper=LT | oper=LE | oper=GE | oper=GT) right=expression #ComparativeLogicExpression
     | left=expression (oper=TIMES | oper=DIVIDE) right=expression #MathsExpression
     | left=expression (oper=PLUS | oper=LESS) right=expression #MathsExpression
-    | variableAccessRef #VariableExpression
-    | literal #LiteralExpression
-    | '(' right=expression ')' #ParenExpression
-    | returnValue=typeExpr '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' '=>' body=bodyStat #ClosureExpression
+    | left=variableAccessRef #VariableExpression
+    | left=literal #LiteralExpression
+    | '(' left=expression ')' #ParenExpression
+    | returnValue=typeExpr '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' '=>' body=bodyDeclaration #ClosureExpression
     ;

@@ -1,17 +1,13 @@
 package site.moheng.betterc.symbol.variable;
 
-import lombok.Value;
 import site.moheng.betterc.symbol.BCLibrarySymbol;
 import site.moheng.betterc.symbol.type.BCTypeSymbol;
 
-@Value(staticConstructor = "of")
-public class BCGlobalVariableSymbol implements BCVariableSymbol {
-    BCLibrarySymbol library;
-    BCTypeSymbol type;
-    String name;
-
+public record BCGlobalVariableSymbol(BCLibrarySymbol library,
+                                     BCTypeSymbol type,
+                                     String name) implements BCVariableSymbol {
     @Override
-    public String getMappingName() {
-        return library.getSymbolPrefixName() + name;
+    public String mappingName() {
+        return library.symbolPrefixName() + name;
     }
 }

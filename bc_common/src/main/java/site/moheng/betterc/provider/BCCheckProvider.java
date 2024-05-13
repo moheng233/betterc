@@ -1,4 +1,0 @@
-package site.moheng.betterc.provider;
-
-public class BCCheckProvider {
-}

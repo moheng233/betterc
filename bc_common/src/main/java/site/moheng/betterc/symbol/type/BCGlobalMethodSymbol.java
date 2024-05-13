@@ -14,6 +14,6 @@ public class BCGlobalMethodSymbol implements BCMethodSymbol {
 
     @Override
     public String getMappingName() {
-        return library.getSymbolPrefixName() + name;
+        return library.symbolPrefixName() + name;
     }
 }

@@ -16,6 +16,11 @@ public interface BCTypeSymbol {
         public boolean isUnknown() {
             return true;
         }
+
+        @Override
+        public String toString() {
+            return getName();
+        }
     };
 
     String getName();
@@ -29,9 +34,6 @@ public interface BCTypeSymbol {
         return false;
     }
 
-    /**
-     * @return
-     */
     default BCTypeSymbol compatible(BCTypeSymbol other) {
         return BCTypeSymbol.UNKNOWN;
     }

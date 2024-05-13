@@ -13,12 +13,10 @@ import java.util.List;
 public class BCStructSymbol implements BCTypeSymbol {
     BCLibrarySymbol library;
     String name;
-    @With List<BCStructFieldSymbol> fields;
     @With List<BCInterfaceSymbol> implementations;
-    @With List<BCStructMethodSymbol> methods;
 
     @Override
     public String getMappingName() {
-        return library.getSymbolPrefixName() + name;
+        return library.symbolPrefixName() + name;
     }
 }

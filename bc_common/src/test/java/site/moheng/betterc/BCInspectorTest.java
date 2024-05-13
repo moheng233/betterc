@@ -8,6 +8,8 @@ import site.moheng.betterc.antlr.BCParser;
 import site.moheng.betterc.diagnostic.SyntaxDiagnostic;
 import site.moheng.betterc.inspector.InspectorContext;
 import site.moheng.betterc.inspector.TypePreProcessingInspector;
+import site.moheng.betterc.symbol.BCLibrarySymbol;
+import site.moheng.betterc.symbol.SymbolTable;
 
 class BCInspectorTest {
     public BCParser.ProgramContext compile(String src, InspectorContext inspector) {
@@ -30,11 +32,14 @@ class BCInspectorTest {
     @Test
     void testLiteral() {
         final var inspector = new InspectorContext();
-        final var typeInspector = new TypePreProcessingInspector(inspector);
+        final var table = new SymbolTable();
+        final var library = new BCLibrarySymbol("test", "test.bc");
+        final var typeInspector = new TypePreProcessingInspector(inspector, table, library);
 
         final String source = """
-                void main() {
-                    var a =;
+                void main(List<T> args) {
+                    int a = 1;
+                    boolean b = true;
                 }
                 """;
 

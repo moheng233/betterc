@@ -25,6 +25,12 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.14.0")
     implementation("org.apache.commons:commons-collections4:4.5.0-M1")
 
+    implementation("com.googlecode.cqengine:cqengine:3.6.0") {
+        version {
+            implementation("org.xerial:sqlite-jdbc:3.41.2.1")
+        }
+    }
+
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
@@ -33,6 +39,11 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    jvmArgs = listOf("--enable-preview")
+}
+
+tasks.withType<JavaCompile>().all() {
+    options.compilerArgs.add("--enable-preview")
 }
 
 tasks.generateGrammarSource {

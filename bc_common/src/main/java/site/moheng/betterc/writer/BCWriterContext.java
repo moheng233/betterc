@@ -12,7 +12,7 @@ public abstract class BCWriterContext {
     }
 
     public String formatSymbol(@NotNull BCParser.SymbolContext symbol) {
-        return library.getSymbolPrefixName() + "_" + symbol.getText();
+        return library.symbolPrefixName() + "_" + symbol.getText();
     }
 
     public String formatTypeLiteral(@NotNull BCParser.TypeLiteralContext typeLiteral) {
@@ -21,12 +21,7 @@ public abstract class BCWriterContext {
 
     public String formatTypeLiteral(@NotNull BCLibrarySymbol library,
                                     @NotNull BCParser.TypeLiteralContext typeLiteral) {
-        return switch (typeLiteral) {
-            case BCParser.SymbolTypeLiteralContext literal:
-                yield "literal";
-            default:
-                throw new IllegalStateException("Unexpected value: " + typeLiteral);
-        };
+        return "";
     }
 
     public String formatTypeExpr(@NotNull BCParser.TypeExprContext typeExpr) {

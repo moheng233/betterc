@@ -4,17 +4,17 @@ import site.moheng.betterc.symbol.type.BCInterfaceSymbol;
 import site.moheng.betterc.symbol.type.BCTypeSymbol;
 
 public interface BCVariableSymbol {
-    String getName();
+    String name();
 
-    BCTypeSymbol getType();
+    BCTypeSymbol type();
 
-    String getMappingName();
+    String mappingName();
 
     default boolean isStruct() {
-        return getType() instanceof BCTypeSymbol;
+        return type() != null;
     }
 
     default boolean isInterface() {
-        return getType() instanceof BCInterfaceSymbol;
+        return type() instanceof BCInterfaceSymbol;
     }
 }

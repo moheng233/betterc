@@ -20,4 +20,9 @@ public class BCMappingTypeSymbol implements BCTypeSymbol {
     public String getMappingName() {
         return mappingName;
     }
+
+    @Override
+    public BCTypeSymbol compatible(final BCTypeSymbol other) {
+        return (this == other) ? this : BCTypeSymbol.UNKNOWN;
+    }
 }

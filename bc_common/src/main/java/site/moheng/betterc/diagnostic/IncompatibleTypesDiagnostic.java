@@ -30,6 +30,11 @@ public class IncompatibleTypesDiagnostic implements DiagnosticMessage {
 
     @Override
     public String getMessage() {
-        return "[" + getLine() + ":" + getCharPositionInLine() + "] " + "";
+        return STR."[\{getLine()}:\{getCharPositionInLine()}] need \{needType} but now has \{sourceType}";
+    }
+
+    @Override
+    public String toString() {
+        return getMessage();
     }
 }

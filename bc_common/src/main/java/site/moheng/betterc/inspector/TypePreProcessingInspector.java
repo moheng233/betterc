@@ -1,10 +1,16 @@
 package site.moheng.betterc.inspector;
 
 import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.Nullable;
+import org.antlr.v4.runtime.ParserRuleContext;
 import site.moheng.betterc.antlr.BCBaseListener;
 import site.moheng.betterc.antlr.BCParser;
-import site.moheng.betterc.symbol.type.BCMappingTypeSymbol;
+import site.moheng.betterc.diagnostic.IncompatibleTypesDiagnostic;
+import site.moheng.betterc.symbol.BCLibrarySymbol;
+import site.moheng.betterc.symbol.SymbolTable;
+import site.moheng.betterc.symbol.type.*;
+
+import java.util.List;
+import java.util.Stack;
 
 /**
  * 对于类型的前处理诊断
@@ -13,33 +19,113 @@ import site.moheng.betterc.symbol.type.BCMappingTypeSymbol;
 @AllArgsConstructor
 public class TypePreProcessingInspector extends BCBaseListener {
     public final InspectorContext inspector;
-    @Nullable public BCParser.ProgramContext program;
-    @Nullable public BCParser.InterfaceDeclarationContext interfaceDeclaration;
-    @Nullable public BCParser.StructDeclarationContext structDeclaration;
-    @Nullable public BCParser.MethodDeclarationContext methodDeclaration;
+    public final SymbolTable table;
+    public final BCLibrarySymbol library;
+
+    public final Stack<ParserRuleContext> scoopStack = new Stack<>();
 
     @Override
     public void enterProgram(final BCParser.ProgramContext ctx) {
-        program = ctx;
+        scoopStack.push(ctx);
         super.enterProgram(ctx);
     }
 
     @Override
     public void exitProgram(final BCParser.ProgramContext ctx) {
-        program = null;
+        scoopStack.pop();
         super.exitProgram(ctx);
     }
 
     @Override
+    public void exitMethodDeclaration(final BCParser.MethodDeclarationContext ctx) {
+        final var name = ctx.name.getText();
+        final var type = BCStructMethodSymbol.of(inspector.getType(ctx.returnValue), name,
+                ctx.args.stream().map(arg -> BCMethodArgSymbol.of(arg.name.id.getText(), inspector.getType(arg.type))).toList()
+        );
+        final var method = table.addTypeSymbol(name, library, type, scoopStack.peek(), ctx);
+        super.exitMethodDeclaration(ctx);
+    }
+
+    @Override
     public void enterStructDeclaration(final BCParser.StructDeclarationContext ctx) {
-        structDeclaration = ctx;
+        final var name = ctx.name.getText();
+        final var type = BCStructSymbol.of(library, name, List.of());
+        final var struct = table.addTypeSymbol(name, library, type, scoopStack.peek(), ctx);
+        scoopStack.push(ctx);
         super.enterStructDeclaration(ctx);
     }
 
     @Override
+    public void exitStructField(final BCParser.StructFieldContext ctx) {
+        final var name = ctx.name.getText();
+        final var type = BCStructFieldSymbol.of(name, inspector.getType(ctx.type));
+        final var field = table.addTypeSymbol(name, library, type, scoopStack.peek(), ctx);
+        super.enterStructField(ctx);
+    }
+
+    @Override
+    public void exitStructMethod(final BCParser.StructMethodContext ctx) {
+        final var declaration = ctx.methodDeclaration();
+        final var name = declaration.name.getText();
+        final var type = BCStructMethodSymbol.of(inspector.getType(declaration.returnValue), name,
+                declaration.args.stream().map(arg -> BCMethodArgSymbol.of(arg.name.toString(), inspector.getType(arg.type))).toList()
+        );
+        final var method = table.addTypeSymbol(type.getName(), library, type, scoopStack.peek(), ctx);
+        super.exitStructMethod(ctx);
+    }
+
+    @Override
     public void exitStructDeclaration(final BCParser.StructDeclarationContext ctx) {
-        structDeclaration = null;
+        scoopStack.pop();
         super.exitStructDeclaration(ctx);
+    }
+
+    @Override
+    public void enterBodyDeclaration(final BCParser.BodyDeclarationContext ctx) {
+        scoopStack.push(ctx);
+        super.enterBodyDeclaration(ctx);
+    }
+
+    @Override
+    public void exitVariableDeclarationStatement(final BCParser.VariableDeclarationStatementContext ctx) {
+        BCTypeSymbol type;
+        if (ctx.type == null) {
+            type = inspector.getType(ctx.value);
+        } else {
+            type = inspector.getType(ctx.type);
+            BCTypeSymbol variable_type = inspector.getType(ctx.value);
+
+            if (type.compatible(variable_type) == BCTypeSymbol.UNKNOWN) {
+                inspector.addDiagnostic(
+                        IncompatibleTypesDiagnostic.of(ctx.value, ctx.type, variable_type, type)
+                );
+            }
+        }
+        table.addLocalVariable(ctx.name.getText(), library, type, scoopStack.peek(), ctx);
+        super.exitVariableDeclarationStatement(ctx);
+    }
+
+    @Override
+    public void exitBodyDeclaration(final BCParser.BodyDeclarationContext ctx) {
+        scoopStack.pop();
+        super.exitBodyDeclaration(ctx);
+    }
+
+    @Override
+    public void exitTypeRef(final BCParser.TypeRefContext ctx) {
+        inspector.symbols.put(ctx, switch (ctx.type.id.getText()) {
+            case "int" -> BCMappingTypeSymbol.INT;
+            case "float" -> BCMappingTypeSymbol.FLOAT;
+            case "boolean" -> BCMappingTypeSymbol.BOOLEAN;
+            default -> BCTypeSymbol.UNKNOWN;
+        });
+        super.exitTypeRef(ctx);
+    }
+
+    @Override
+    public void exitTypeLiteralExpression(final BCParser.TypeLiteralExpressionContext ctx) {
+        inspector.symbols.put(ctx, inspector.getType(ctx.type));
+        super.exitTypeLiteralExpression(ctx);
     }
 
     @Override

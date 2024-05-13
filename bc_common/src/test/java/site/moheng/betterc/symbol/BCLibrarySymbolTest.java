@@ -9,8 +9,8 @@ class BCLibrarySymbolTest {
 
     @Test
     void getSymbolPrefixName() {
-        assertEquals(BCLibrarySymbol.GLOBAL.getSymbolPrefixName(), "global__");
-        assertEquals(BCLibrarySymbol.STD.getSymbolPrefixName(), "bc_std_");
-        assertEquals(BCLibrarySymbol.of("bc", "test", "test1").getSymbolPrefixName(), "bc_test_test1_");
+        assertEquals(BCLibrarySymbol.GLOBAL.symbolPrefixName(), "global__");
+        assertEquals(BCLibrarySymbol.STD.symbolPrefixName(), "bc_std_");
+        assertEquals(BCLibrarySymbol.of("bc", "test", "test1").symbolPrefixName(), "bc_test_test1_");
     }
 }
