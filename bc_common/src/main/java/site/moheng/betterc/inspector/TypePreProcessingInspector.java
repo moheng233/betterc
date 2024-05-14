@@ -64,17 +64,6 @@ public class TypePreProcessingInspector extends BCBaseListener {
     }
 
     @Override
-    public void exitStructMethod(final BCParser.StructMethodContext ctx) {
-        final var declaration = ctx.methodDeclaration();
-        final var name = declaration.name.getText();
-        final var type = BCStructMethodSymbol.of(inspector.getType(declaration.returnValue), name,
-                declaration.args.stream().map(arg -> BCMethodArgSymbol.of(arg.name.toString(), inspector.getType(arg.type))).toList()
-        );
-        final var method = table.addTypeSymbol(type.getName(), library, type, scoopStack.peek(), ctx);
-        super.exitStructMethod(ctx);
-    }
-
-    @Override
     public void exitStructDeclaration(final BCParser.StructDeclarationContext ctx) {
         scoopStack.pop();
         super.exitStructDeclaration(ctx);

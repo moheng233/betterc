@@ -69,6 +69,7 @@ program
           methods+=methodDeclaration
         | interfaces+=interfaceDeclaration
         | structs+=structDeclaration
+        | implements+=implementDeclaration
     )* EOF ;
 
 symbol: id=ID ;
@@ -86,15 +87,21 @@ interfaceDeclaration : INTERFACE name=symbol (EXTENDS extends+=typeAccessRef ( '
 structField
     : static=STATIC? count=CONST? type=typeExpr name=symbol ASSIGN value=expression SEMI
     ;
-structMethod
-    :  methodDeclaration SEMI
-    ;
 structDeclaration
     : STRUCT name=symbol (IMPLEMENT implementations+=typeAccessRef (',' implementations+=typeAccessRef)*)?
     '{'
         fields+=structField*
-        methods+=structMethod*
     '}' ;
+
+implementMethod
+    :  methodDeclaration SEMI
+    ;
+
+implementDeclaration
+    : IMPLEMENT struct=typeAccessRef ( FOR interface=typeAccessRef )?
+    '{'
+        implementMethod*
+    '}';
 
 methodDeclaration : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' body=bodyDeclaration ;
 bodyDeclaration: '{' statements+=statement* '}' ;
