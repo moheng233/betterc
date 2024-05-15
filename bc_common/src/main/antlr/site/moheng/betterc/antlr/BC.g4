@@ -100,7 +100,7 @@ implementMethod
 implementDeclaration
     : IMPLEMENT struct=typeAccessRef ( FOR interface=typeAccessRef )?
     '{'
-        implementMethod*
+        methods+=implementMethod*
     '}';
 
 methodDeclaration : returnValue=typeExpr name=symbol '(' (args+=uniArgDef (COMMA args+=uniArgDef)*)? ')' body=bodyDeclaration ;
@@ -138,7 +138,7 @@ literal
 
 expression
     : left=expression '(' (args+=expression (COMMA args+=expression)*)? ')' #CallExpression
-    | left=typeLiteral ASSIGN expression #VariableAssignment
+    | left=variableAccessRef ASSIGN expression #VariableAssignment
     | oper=NOT right=expression #NotExpression
     | left=expression oper=AS type=typeExpr #AsExpression
     | left=expression (oper=AND | oper=OR) right=expression #CombinatorialLogicExpression

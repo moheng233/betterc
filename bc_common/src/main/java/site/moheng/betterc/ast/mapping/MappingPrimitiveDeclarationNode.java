@@ -1,10 +1,11 @@
 package site.moheng.betterc.ast.mapping;
 
+import lombok.NonNull;
+import site.moheng.betterc.antlr.BCParser;
 import site.moheng.betterc.ast.ASTTypeDeclarationNode;
-import site.moheng.betterc.ast.ProgramNode;
 
 public record MappingPrimitiveDeclarationNode(
-        ProgramNode parent,
+        @NonNull BCParser.ImportDeclartionContext context,
         String name
 ) implements ASTTypeDeclarationNode {
 }

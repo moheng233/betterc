@@ -1,18 +1,24 @@
 package site.moheng.betterc.ast;
 
-import site.moheng.betterc.ast.ref.TypeRefNode;
+import site.moheng.betterc.antlr.BCParser;
 
 import java.util.List;
 
 public interface ASTMethodDeclarationNode extends ASTNodeHasNamed, ASTTypeDeclarationNode, ASTScopeNode {
-    TypeRefNode<?> returnType();
+    ASTTypeExpressionNode returnType();
 
     List<MethodArgDeclaration> args();
 
     record MethodArgDeclaration(
+            BCParser.UniArgDefContext context,
             String name,
-            TypeRefNode<?> type
-    ) {
-
+            ASTTypeExpressionNode type
+    ) implements ASTNode, ASTActualNode<BCParser.UniArgDefContext> {
+        public static MethodArgDeclaration from(BCParser.UniArgDefContext context) {
+            return new MethodArgDeclaration(
+                    context.name.getText(),
+                    ASTTypeExpressionNode.from(context.type)
+            );
+        }
     }
 }
