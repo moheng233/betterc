@@ -1,21 +1,42 @@
 package site.moheng.betterc.ast;
 
-import lombok.Singular;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import site.moheng.betterc.antlr.BCParser;
 import site.moheng.betterc.ast.method.GlobalMethodDeclarationNode;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public record ProgramNode(
-        BCParser.ProgramContext context,
-        String namespace,
-        String path,
-        @Singular("import_") Set<ImportNode> imports,
-        @Singular("interface_") Set<InterfaceDeclarationNode> interfaces,
-        @Singular Set<StructDeclarationNode> structs,
-        @Singular Set<GlobalMethodDeclarationNode> methods
-) implements ASTNode, ASTActualNode<BCParser.ProgramContext>, ASTScopeNode {
-    public static ProgramNode from(BCParser.ProgramContext context) {
+@Data
+@RequiredArgsConstructor
+@AllArgsConstructor
+public class ProgramNode implements ASTNode, ASTActualNode<BCParser.ProgramContext>, ASTScopeNode {
+    @NonNull private BCParser.ProgramContext context;
+    @NonNull private String namespace;
+    @NonNull private String path;
+    private Set<ImportNode> imports = Set.of();
+    private Set<InterfaceDeclarationNode> interfaces = Set.of();
+    private Set<StructDeclarationNode> structs = Set.of();
+    private Set<GlobalMethodDeclarationNode> methods = Set.of();
 
+    public static ProgramNode from(ASTBuilderContext util, BCParser.ProgramContext context) {
+        final var namespace = util.namespace();
+        final var path = util.path();
+        final var imports = context.imports.stream()
+                .map(ImportNode::from)
+                .collect(Collectors.toSet());
+        final var interfaces = context.interfaces.stream()
+                .map(InterfaceDeclarationNode::from)
+                .collect(Collectors.toSet());
+        final var structs = context.structs.stream()
+                .map(StructDeclarationNode::from)
+                .collect(Collectors.toSet());
+        final var methods = context.methods.stream()
+                .map(GlobalMethodDeclarationNode::from)
+                .collect(Collectors.toSet());
+        return new ProgramNode(context, namespace, path, imports, interfaces, structs, methods);
     }
 }

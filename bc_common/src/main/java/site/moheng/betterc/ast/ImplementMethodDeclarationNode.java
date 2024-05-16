@@ -3,20 +3,21 @@ package site.moheng.betterc.ast;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
+import lombok.With;
 import site.moheng.betterc.antlr.BCParser;
 
 import java.util.List;
 
 @Builder
 public record ImplementMethodDeclarationNode(
-        @NonNull BCParser.ImplementMethodContext context,
-        String name,
-        ASTTypeExpressionNode returnType,
+        @With @NonNull BCParser.ImplementMethodContext context,
+        @NonNull String name,
+        @NonNull ASTTypeExpressionNode returnType,
         @Singular List<MethodArgDeclaration> args,
         @Singular List<ASTStatementNode> statements
 ) implements ASTNode, ASTMethodHasBodyDeclarationNode, ASTActualNode<BCParser.ImplementMethodContext> {
 
-    public static ImplementDeclarationNode from(@NonNull BCParser.ImplementMethodContext context) {
+    public static ImplementMethodDeclarationNode from(@NonNull BCParser.ImplementMethodContext context) {
         final var method = context.methodDeclaration();
         final var name = method.name.getText();
         final var returnType = ASTTypeExpressionNode.from(method.returnValue);

@@ -16,12 +16,18 @@ java {
     targetCompatibility = JavaVersion.VERSION_21;
 }
 
+lombok {
+
+}
+
 val junitVersion: String by project
 val jetbrainsAnnotationsVersion: String by project
+val lsp4jVersion: String by project
 
 dependencies {
     implementation("org.jetbrains:annotations:$jetbrainsAnnotationsVersion")
     implementation("org.ainslec:picocog:1.0.7")
+    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:$lsp4jVersion")
     implementation("org.apache.commons:commons-lang3:3.14.0")
     implementation("org.apache.commons:commons-collections4:4.5.0-M1")
 

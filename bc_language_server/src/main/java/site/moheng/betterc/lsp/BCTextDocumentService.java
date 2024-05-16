@@ -8,28 +8,34 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class BCTextDocumentService implements TextDocumentService {
+
     @Override
-    public void didOpen(DidOpenTextDocumentParams params) {
+    public void didOpen(final DidOpenTextDocumentParams params) {
 
     }
 
     @Override
-    public void didChange(DidChangeTextDocumentParams params) {
+    public void didChange(final DidChangeTextDocumentParams params) {
 
     }
 
     @Override
-    public void didClose(DidCloseTextDocumentParams params) {
+    public void didClose(final DidCloseTextDocumentParams params) {
 
     }
 
     @Override
-    public void didSave(DidSaveTextDocumentParams params) {
+    public void didSave(final DidSaveTextDocumentParams params) {
 
     }
 
     @Override
-    public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(final CompletionParams position) {
-        return TextDocumentService.super.completion(position);
+    public CompletableFuture<Either<SemanticTokens, SemanticTokensDelta>> semanticTokensFullDelta(final SemanticTokensDeltaParams params) {
+        return TextDocumentService.super.semanticTokensFullDelta(params);
+    }
+
+    @Override
+    public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(final DocumentSymbolParams params) {
+        return TextDocumentService.super.documentSymbol(params);
     }
 }

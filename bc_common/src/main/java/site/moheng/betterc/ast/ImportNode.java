@@ -6,6 +6,10 @@ import org.jetbrains.annotations.Nullable;
 import site.moheng.betterc.URIHelper;
 import site.moheng.betterc.antlr.BCParser;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 public record ImportNode(
         @NonNull BCParser.ImportDeclartionContext context,
         @Nullable String namespace,
@@ -19,5 +23,20 @@ public record ImportNode(
             return new ImportNode(context, namespace, path, null);
         }
         return null;
+    }
+
+    public static @NotNull Set<ImportNode> from(ASTBuilderContext util, @NotNull ArrayList<BCParser.ImportDeclartionContext> contexts) {
+        final var imports = new HashSet<ImportNode>();
+
+        for (final BCParser.ImportDeclartionContext context : contexts) {
+            final var importNode = ImportNode.from(context);
+            if (importNode != null) {
+                imports.add(importNode);
+            } else {
+                util.addDiagnostic(util.diagnostics().importError(context.uri));
+            }
+        }
+
+        return imports;
     }
 }
